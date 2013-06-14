@@ -7,11 +7,12 @@ Gem::Specification.new do |s|
   s.name        = "dor-services"
   s.version     = Dor::VERSION
   s.platform    = Gem::Platform::RUBY
-  s.authors     = ["Michael Klein","Willy Mene","Chris Fitzpatrick","Richard Anderson","Renzo Sanchez-Silva"]
+  s.authors     = ["Michael Klein","Willy Mene","Chris Fitzpatrick","Richard Anderson","Renzo Sanchez-Silva","Darren Hardy"]
   s.email       = ["mbklein@stanford.edu"]
   s.summary     = "Ruby implmentation of DOR services used by the SULAIR Digital Library"
   s.description = "Contains classes to register objects and initialize workflows"
   s.executables = ["dor-indexer","dor-indexerd"]
+  s.licenses = ['ALv2', 'Stanford University Libraries']
 
   s.required_rubygems_version = ">= 1.3.6"
 
@@ -22,7 +23,8 @@ Gem::Specification.new do |s|
   s.add_dependency "solrizer", "~> 2.0"
   s.add_dependency "activesupport"
   s.add_dependency "rsolr-ext"
-  s.add_dependency "nokogiri", ">= 1.6.0"
+  s.add_dependency "rsolr-client-cert", ">=0.5.1"
+  s.add_dependency "nokogiri", "~> 1.5.10"
   s.add_dependency "confstruct", ">= 0.2.2"
   s.add_dependency "rest-client"
   s.add_dependency "validatable"
@@ -36,6 +38,7 @@ Gem::Specification.new do |s|
   s.add_dependency "equivalent-xml", ">=0.2.2"
   s.add_dependency "net-ssh"
   s.add_dependency "net-sftp"
+  s.add_dependency "net-ssh-krb", ">=0.3.0" # Kerberos
   s.add_dependency "druid-tools", ">=0.2.3"
   s.add_dependency "moab-versioning", "1.3.0"
   s.add_dependency "stanford-mods", ">=0.0.14"

@@ -133,7 +133,7 @@ Version 1.0	2007-05-04 Tracy Meehleib <tmee@loc.gov>
 
 		<xsl:for-each select="mods:titleInfo/mods:title">
 			<dc:subject>
-				<xsl:value-of select="mods:titleInfo/mods:title"/>
+				<xsl:value-of select="."/>
 			</dc:subject>
 		</xsl:for-each>
 
@@ -154,7 +154,7 @@ Version 1.0	2007-05-04 Tracy Meehleib <tmee@loc.gov>
 			</dc:coverage>
 		</xsl:for-each>
 
-		<xsl:for-each select="mods:cartographics/*">
+		<xsl:for-each select="mods:cartographics/mods:coordinates">
 			<dc:coverage>
 				<xsl:value-of select="."/>
 
@@ -185,7 +185,9 @@ Version 1.0	2007-05-04 Tracy Meehleib <tmee@loc.gov>
 	<xsl:template match="mods:abstract | mods:tableOfContents | mods:note">
 		<dc:description>
 			<xsl:copy-of select="@type"/>
-			<xsl:copy-of select="@displayLabel"/>
+			<xsl:attribute name="label">
+			  <xsl:value-of select="@displayLabel"/>
+		  </xsl:attribute>
 			<xsl:value-of select="."/>
 		</dc:description>
 	</xsl:template>
@@ -239,7 +241,12 @@ Version 1.0	2007-05-04 Tracy Meehleib <tmee@loc.gov>
 					</dc:type>
 				</xsl:for-each>
 			</xsl:when>
-
+			<!-- TODO: DC has a type vocabulary:
+			       http://dublincore.org/documents/dcmi-type-vocabulary
+			     so arbitrary keywords shouldn't go through...
+			  -->
+			<xsl:when test="@authority='lcgft'"/>
+			<xsl:when test="@authority='rda'"/>
 			<xsl:otherwise>
 				<dc:type>
 					<xsl:value-of select="."/>
@@ -262,6 +269,9 @@ Version 1.0	2007-05-04 Tracy Meehleib <tmee@loc.gov>
 		</xsl:if>
 		<xsl:if test=".='software'">
 			<dc:type>Software</dc:type>
+		</xsl:if>
+		<xsl:if test=". ='cartographic'">
+			<dc:type>DataSet</dc:type>
 		</xsl:if>
 		<xsl:if test=".='cartographic material'">
 			<dc:type>Image</dc:type>
@@ -293,12 +303,6 @@ Version 1.0	2007-05-04 Tracy Meehleib <tmee@loc.gov>
 	</xsl:template>
 
 	<xsl:template match="mods:physicalDescription">
-
-		<xsl:if test="mods:extent">
-			<dc:format>
-				<xsl:value-of select="mods:extent"/>
-			</dc:format>
-		</xsl:if>
 		<xsl:if test="mods:form">
 			<dc:format>
 				<xsl:value-of select="mods:form"/>

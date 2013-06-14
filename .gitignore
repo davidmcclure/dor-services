@@ -8,9 +8,8 @@ rdoc
 .bundle
 .idea
 spec/fixtures/export
+config/certs
 .rspec
 .ruby-gemset
 .ruby-version
-Gemfile.lock
-config/dev_console_env.rb
-spec/fixtures/workspace/*/*/*/*/*/temp/
+*.orig

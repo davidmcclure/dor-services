@@ -39,6 +39,7 @@
     :relationshipMetadata: required
     :technicalMetadata: required
     :contentMetadata: required
+    :geoMetadata: optional
   :rest_url: ""
 :stacks:
   :local_workspace_root: /dor
