@@ -135,11 +135,6 @@ module Dor
   autoload :ProvenanceMetadataService, 'dor/services/provenance_metadata_service'
   autoload :TechnicalMetadataService, 'dor/services/technical_metadata_service'
   
-  # Versioning Classes
-  module Versioning
-    autoload :FileInventoryDifference, 'dor/versioning/file_inventory_difference'
-  end
-  
   # Workflow Classes
   module Workflow
     autoload :Graph, 'dor/workflow/graph'
