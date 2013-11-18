@@ -341,10 +341,9 @@ This is located in the ./script subdirectory so that it does not get installed b
 - <b>4.2.0</b> Nokogiri 1.6.0
 - <b>4.2.1</b> Check for versionmetadata datastream when doing sdr-ingest-transfer
 - <b>4.2.3</b> Fix an exception that occured when a version had no description
-- <b>4.3.0.rc5</b>
-- <b>4.3.0.rc6</b>
-- <b>4.3.0.rc7</b>
-- <b>4.3.0</b> Adds geoMetadata support
+- <b>4.3.0</b> Add some missing hydrus solr fields
+- <b>4.3.2</b> Bug fixes and refactoring of object status logic
+- <b>4.4.0</b> Adds geoMetadata support
 == Copyright
 
 Copyright (c) 2013 Stanford University Library. See LICENSE for details.
