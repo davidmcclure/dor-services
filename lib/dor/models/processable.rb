@@ -129,54 +129,10 @@ module Dor
       current_milestones.each do |m|
         name=m[:milestone]
         time=m[:at].utc.xmlschema
-        version=m[:version]
-        if (current and not version) or (not current and version==oldest_version)
-          case name
-          when 'registered'
-            if status<1
-              status=1
-              status_time=time
-            end
-          when 'submitted'
-            if status<2
-              status=2
-              status_time=time
-            end
-          when 'described'
-            if status<3
-              status=3
-              status_time=time
-            end
-          when 'published'
-            if status<4
-              status=4
-              status_time=time
-            end
-          when 'deposited'
-            if status<5
-              status=5
-              status_time=time
-            end
-          when 'accessioned'
-            if status<6
-              status=6
-              status_time=time
-            end
-          when 'indexed'
-            if status<7
-              status=7
-              status_time=time
-            end
-          when 'shelved'
-            if status<8
-              status=8
-              status_time=time
-            end
-          when 'opened'
-            if status<1
-              status=1
-              status_time=time
-            end
+        if steps.keys.include? name
+          if steps[name] > status
+            status = steps[name]
+            status_time=time
           end
         end
       end

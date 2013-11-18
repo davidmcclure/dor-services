@@ -1,21 +1,6 @@
-require 'net/ssh'
-require 'net/sftp'
-require 'net/ssh/kerberos'
-
 module Dor
   module Contentable
     extend ActiveSupport::Concern
-    
-    def self.sftp_content_client
-      sftp = Net::SFTP.start(Config.content.content_server,
-                             Config.content.content_user,
-                             :auth_methods => [Config.content.ssh_auth || 'publickey'])
-      if block_given?
-        yield sftp
-      else
-        sftp
-      end
-    end
 
     #add a file to a resource, not to be confused with add a resource to an object
     def add_file file, resource, file_name, mime_type=nil,publish='no', shelve='no', preserve='no'
@@ -25,7 +10,7 @@ module Dor
       if xml.search('//resource[@id=\''+resource+'\']').length == 0
         raise 'resource doesnt exist.'
       end
-      sftp=Dor::Contentable.sftp_content_client
+      sftp=Net::SFTP.start(Config.content.content_server,Config.content.content_user,:auth_methods=>['publickey'])
       druid_tools=DruidTools::Druid.new(self.pid,Config.content.content_base_dir)
       location=druid_tools.path(file_name)
       oldlocation=location.gsub('/'+self.pid.gsub('druid:',''),'')
@@ -58,7 +43,7 @@ module Dor
     end
 
     def replace_file file,file_name
-      sftp=Dor::Contentable.sftp_content_client
+      sftp=Net::SFTP.start(Config.content.content_server,Config.content.content_user,:auth_methods=>['publickey'])
       item=Dor::Item.find(self.pid)
       druid_tools=DruidTools::Druid.new(self.pid,Config.content.content_base_dir)
       location=druid_tools.path(file_name)
@@ -69,8 +54,8 @@ module Dor
       size=File.size?(file.path)
       #update contentmd
       file_hash={:name=>file_name,:md5 => md5, :size=>size.to_s, :sha1=>sha1}
-      begin 
-        sftp.stat!(location)
+      begin
+        request=sftp.stat!(location)
         sftp.upload!(file.path,location)
         #this doesnt allow renaming files
         item.contentMetadata.update_file(file_hash, file_name)
@@ -86,8 +71,8 @@ module Dor
       add=preservation_server+file+"?version="+version
       uri = URI(add)
       req = Net::HTTP::Get.new(uri.request_uri)
-      req.basic_auth Config.content.sdr_user, Config.content.sdr_pass 
-      Net::HTTP.start(uri.hostname, uri.port, :use_ssl => uri.scheme == 'https') {|http|
+      req.basic_auth Config.content.sdr_user, Config.content.sdr_pass
+      res = Net::HTTP.start(uri.hostname, uri.port, :use_ssl => uri.scheme == 'https') {|http|
         http.request(req)
       }
     end
@@ -96,7 +81,7 @@ module Dor
       druid_tools=DruidTools::Druid.new(self.pid,Config.content.content_base_dir)
       location=druid_tools.path(file)
       oldlocation=location.gsub('/'+file,'').gsub('/'+self.pid.gsub('druid:',''),'')+'/'+file
-      sftp=Dor::Contentable.sftp_content_client
+      sftp=Net::SFTP.start(Config.content.content_server,Config.content.content_user,:auth_methods=>['publickey'])
       begin
         data=sftp.download!(location)
       rescue
@@ -107,7 +92,7 @@ module Dor
       druid_tools=DruidTools::Druid.new(self.pid,Config.content.content_base_dir)
       location=druid_tools.path(filename)
       oldlocation=location.gsub('/'+self.pid.gsub('druid:',''),'')
-      sftp=Dor::Contentable.sftp_content_client
+      sftp=Net::SFTP.start(Config.content.content_server,Config.content.content_user,:auth_methods=>['publickey'])
       begin
         data=sftp.remove!(location)
       rescue
@@ -123,7 +108,7 @@ module Dor
       druid_tools=DruidTools::Druid.new(self.pid,Config.content.content_base_dir)
       location=druid_tools.path(old_name)
       oldlocation=location.gsub('/'+self.pid.gsub('druid:',''),'')
-      sftp=Dor::Contentable.sftp_content_client
+      sftp=Net::SFTP.start(Config.content.content_server,Config.content.content_user,:auth_methods=>['publickey'])
       begin
         data=sftp.rename!(location,location.gsub(old_name,new_name))
       rescue
@@ -134,7 +119,7 @@ module Dor
     def remove_resource resource_name
       #run delete for all of the files in the resource
       xml=self.contentMetadata.ng_xml
-      xml.search('//resource[@id=\''+resource_name+'\']/file').each do |file|
+      files=xml.search('//resource[@id=\''+resource_name+'\']/file').each do |file|
         self.remove_file(file['id'])
       end
       #remove the resource record from the metadata and renumber the resource sequence
@@ -144,7 +129,7 @@ module Dor
     def list_files
       filename='none'
       files=[]
-      sftp=Dor::Contentable.sftp_content_client
+      sftp=Net::SFTP.start(Config.content.content_server,Config.content.content_user,:auth_methods=>['publickey'])
       druid_tools=DruidTools::Druid.new(self.pid,Config.content.content_base_dir)
       location=druid_tools.path(filename).gsub(filename,'')
       oldlocation=location.gsub('/'+self.pid.gsub('druid:',''),'')

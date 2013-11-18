@@ -83,8 +83,12 @@ module Dor
       end
       node=nil
 
-      max = xml.search('//resource').map {|r| r['sequence'].to_i}.max || -1
-
+      max=-1
+      xml.search('//resource').each do |node|
+        if node['sequence'].to_i>max
+          max=node['sequence'].to_i
+        end
+      end
       #renumber all of the resources that will come after the newly added one
       while max>position do
         node=xml.search('//resource[@sequence=\'' + position + '\']')

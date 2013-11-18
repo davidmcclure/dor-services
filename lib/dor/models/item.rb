@@ -14,7 +14,6 @@ module Dor
     include Versionable
     include Contentable
     include Discoverable
-    include Geoable
     
   end
   
@@ -30,7 +29,6 @@ end
 
 # Describable  = Descriptive metadata.
 # Embargoable  = Time limits and processes for embargoed materials.
-# Geoable      = Descriptive metadata for Geographic Infromation records
 # Governable   = Relationships to collections and codified administrative policies.
 # Identifiable = Object identity and source metadata.
 # Itemizable   = Hierarchical content metadata.
