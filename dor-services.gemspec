@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
   s.add_dependency "activesupport"
   s.add_dependency "rsolr-ext"
   s.add_dependency "rsolr-client-cert", ">=0.5.1"
-  s.add_dependency "nokogiri", "~> 1.5.10"
+  s.add_dependency "nokogiri", ">= 1.5.10"
   s.add_dependency "confstruct", ">= 0.2.2"
   s.add_dependency "rest-client"
   s.add_dependency "validatable"
