@@ -55,22 +55,22 @@
     </originInfo>
   </relatedItem>
   <subject>
-    <topic authority="lcsh" lang="eng">Oil fields</topic>
+    <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects.html" lang="eng">Oil fields</topic>
   </subject>
   <subject>
-    <topic authority="lcsh" lang="eng">Gas fields</topic>
+    <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects.html" lang="eng">Gas fields</topic>
   </subject>
   <subject>
-    <topic authority="lcsh" lang="eng">Natural gas</topic>
+    <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects.html" lang="eng">Natural gas</topic>
   </subject>
   <subject>
-    <topic authority="lcsh" lang="eng">Petroleum</topic>
+    <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects.html" lang="eng">Petroleum</topic>
   </subject>
   <subject>
-    <geographic authority="GeoNames" valueURI="http://geonames.org/6252001" lang="eng">United States</geographic>
+    <geographic lang="eng">United States</geographic>
   </subject>
   <subject>
-    <geographic authority="GeoNames" valueURI="http://geonames.org/5332921" lang="eng">California</geographic>
+    <geographic lang="eng">California</geographic>
   </subject>
   <subject>
     <temporal encoding="w3cdtf">2011</temporal>

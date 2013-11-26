@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-     iso19139_to_mods.xsl - Transformation from ISO 19139 XML into MODS v3 
+     geo2mods.xsl - Transformation from ISO 19139 XML into MODS v3 
      
      Copyright 2013, Stanford University Libraries.
      
-     Created by Kim Durante and Darren Hardy.
+     This work is licensed under the Creative Commons 
+     Attribution-ShareAlike 3.0 Unported License. 
+     To view a copy of this license, visit 
+     http://creativecommons.org/licenses/by-sa/3.0 
+     
+     Created by Kim Durante and Darren Hardy, Stanford University Libraries
      
      Requires parameters:
-     * geometryType: One of Point, LineString, Polygon, Curve, or Grid (Raster). see
+     * geometryType: One of Point, LineString, Polygon, Curve, or Grid (Raster). 
+       see
      http://www.schemacentral.com/sc/niem21/t-gml32_GeometryPropertyType.html
-     * purl - i.e., http://purl.stanford.edu/aa111bb2222
-     * zipName - i.e., file1.zip
-     * format - i.e., Shapefile
+     * purl - e.g., http://purl.stanford.edu/aa111bb2222
+     * zipName - e.g., data.zip
+     * format - e.g., MIME type application/x-esri-shapefile
+     
      TODO:
-     * needs Collective title and Series fields mapped?
      * Series statements may need work?
      -->
 <xsl:stylesheet 
@@ -23,7 +29,7 @@
   xmlns:gmd="http://www.isotc211.org/2005/gmd" 
   xmlns:gml="http://www.opengis.net/gml"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
-  version="1.0" exclude-result-prefixes="gmd gco gmi xsl">
+  version="1.0" exclude-result-prefixes="gml gmd gco gmi xsl">
   <xsl:output method="xml" version="1.0" encoding="UTF-8" indent="yes"/>
   <xsl:strip-space elements="*"/>
   <xsl:param name="format" select="'application/x-esri-shapefile'"/>
@@ -413,6 +419,9 @@
                          northernmost latitude, and southernmost latitude,
                          and separated with double-hyphen and / characters.
                          
+                         XXX: Note that this leaves the coordinates in decimal
+                              degrees whereas 255c suggests deg-min-sec.
+                         
                          Example:
                          
                          -97.119945 &#x002D;&#x002D; -82.307619/30.665492 &#x002D;&#x002D; 25.467075
@@ -498,11 +507,13 @@
                 </xsl:if>
               </xsl:for-each>
               <xsl:for-each select="gmd:aggregateDataSetName/gmd:CI_Citation/gmd:citedResponsibleParty/gmd:CI_ResponsibleParty/gmd:personalName">
+                <xsl:if test="ancestor-or-self::gmd:CI_ResponsibleParty/gmd:role/gmd:CI_RoleCode[@codeListValue='originator']">
                 <name type="personal">
                   <namePart>
                     <xsl:value-of select="."/>
                   </namePart>
                 </name>
+                </xsl:if>
               </xsl:for-each>
               <originInfo>
                 <xsl:for-each select="gmd:aggregateDataSetName/gmd:CI_Citation/gmd:citedResponsibleParty/gmd:CI_ResponsibleParty/gmd:organisationName">
@@ -583,6 +594,11 @@
                       </xsl:choose>
                     </xsl:attribute>
                   </xsl:if>
+                  <xsl:if test="ancestor-or-self::*/gmd:thesaurusName/gmd:CI_Citation/gmd:identifier">
+                  <xsl:attribute name="authorityURI">
+                    <xsl:value-of select="ancestor-or-self::*/gmd:thesaurusName/gmd:CI_Citation/gmd:identifier/gmd:MD_Identifier/gmd:code"/>
+                  </xsl:attribute>
+                  </xsl:if>
                     <xsl:attribute name="lang">
                         <xsl:value-of select="../../../../../gmd:language/gmd:LanguageCode"/>
                     </xsl:attribute>
@@ -594,23 +610,14 @@
         </xsl:for-each>
         <xsl:for-each select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords/gmd:MD_Keywords">
           <xsl:if test="gmd:type/gmd:MD_KeywordTypeCode[@codeListValue='place']">
-              
             <xsl:for-each select="gmd:keyword">
               <subject>
                 <geographic>
-                  <xsl:if test="ancestor-or-self::*/gmd:thesaurusName/gmd:CI_Citation/gmd:title">
-                    <xsl:attribute name="authority">
-                      <xsl:value-of select="ancestor-or-self::*/gmd:thesaurusName/gmd:CI_Citation/gmd:title"/>
-                    </xsl:attribute>
-                      <xsl:attribute name="valueURI">
-                           <xsl:value-of select="../../@xlink:href"/>
-                     </xsl:attribute>
-                    
-                      <xsl:attribute name="lang">
-                          <xsl:value-of select="../../../../../gmd:language/gmd:LanguageCode"/>
-                      </xsl:attribute>
-                  </xsl:if>
-                        <xsl:value-of select="."/>
+                  <!-- adds geonames info through external process -->
+                  <xsl:attribute name="lang">
+                    <xsl:value-of select="../../../../../gmd:language/gmd:LanguageCode"/>
+                  </xsl:attribute>
+                  <xsl:value-of select="."/>
                 </geographic>
               </subject>
             </xsl:for-each>
@@ -673,7 +680,9 @@
               <xsl:attribute name="authority">ISO19115TopicCategory</xsl:attribute>
                
              <!-- kd: do we need authorityURI? -->
-               <xsl:attribute name="authorityURI">http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_TopicCategoryCode</xsl:attribute>
+               <xsl:attribute name="authorityURI">
+                 <xsl:text>http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_TopicCategoryCode</xsl:text>
+                </xsl:attribute>
               <xsl:choose>
                 <xsl:when test="contains(.,'farming')">
                   <xsl:attribute name="valueURI"><xsl:value-of select="."/></xsl:attribute>
@@ -796,8 +805,7 @@
                     </gml:upperCorner>
                   </gml:Envelope>
                 </gml:boundedBy>
-                
-                <!-- Output linked data to GeoNames -->
+                <!-- Output linked data to GeoNames: An external process will clean these up -->
                 <xsl:for-each select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords/gmd:MD_Keywords">
                   <xsl:if test="gmd:type/gmd:MD_KeywordTypeCode[@codeListValue='place']">
                     <xsl:for-each select="gmd:keyword">
@@ -805,21 +813,17 @@
                         <xsl:attribute name="rdf:resource">
                           <xsl:value-of select="../../@xlink:href"/>
                         </xsl:attribute>
-                        
                         <xsl:attribute name="dc:language">
                           <xsl:value-of select="../../../../../gmd:language/gmd:LanguageCode"/>
                         </xsl:attribute>
-                        
                         <xsl:attribute name="dc:title">
                           <xsl:value-of select="."/>
                         </xsl:attribute>
                       </dc:coverage>
                     </xsl:for-each>
                   </xsl:if>
-                </xsl:for-each><!-- MD_Keywords -->
-                </rdf:Description>
-
-
+                </xsl:for-each>
+              </rdf:Description>
             </rdf:RDF>
           </extension>
         </xsl:if>
