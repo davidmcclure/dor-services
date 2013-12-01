@@ -32,7 +32,8 @@ Gem::Specification.new do |s|
   s.add_dependency "json"
   s.add_dependency "ruby-cache"
   s.add_dependency "systemu"
-  s.add_dependency "lyber-core"
+  # TODO|dev
+  #s.add_dependency "lyber-core"
   s.add_dependency "ruby-graphviz"
   s.add_dependency "progressbar"
   s.add_dependency "equivalent-xml", ">=0.2.2"

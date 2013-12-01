@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'lyber-core'
+#require 'lyber-core'
 require 'moab_stanford'
 require 'dor-services'
 
@@ -41,7 +41,8 @@ module Dor
       # Now bootstrap SDR workflow. but do not create the workflows datastream
       dor_item.initialize_workflow('sdrIngestWF', 'sdr', false)
     rescue Exception => e
-      raise LyberCore::Exceptions::ItemError.new(druid, "Export failure", e)
+      # TODO|dev
+      #raise LyberCore::Exceptions::ItemError.new(druid, "Export failure", e)
     end
 
     # @param [String] druid The object identifier
