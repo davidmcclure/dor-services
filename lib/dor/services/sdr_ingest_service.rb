@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'lyber-utils'
+require 'lyber-core'
 require 'moab_stanford'
 require 'dor-services'
 
